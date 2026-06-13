@@ -16,7 +16,7 @@
 - [Quick Start](#quick-start)
   - [Weight Sharing](#weight-sharing)
   - [Pretraining](#pretraining)
-  - [Pretraining Log](#pretraining-log)
+  - [Pretraining Logs](#pretraining-logs)
   - [Fine-Tuning](#fine-tuning)
   - [Inference](#inference)
   - [Slurm Submission Scripts](#slurm-submission-scripts)
@@ -25,7 +25,7 @@
   - [Per-Modality Pipelines](#per-modality-pipelines)
   - [Registration Dependencies](#registration-dependencies)
   - [Registration Usage](#registration-usage)
-- [Benchmarking Neuro-JEPA](#benchmarking-neurojepa)
+- [Benchmarking Neuro-JEPA](#benchmarking-neuro-jepa)
   - [Multimodal Evaluation](#multimodal-evaluation)
   - [Average Unimodal Performance](#average-unimodal-performance)
   - [Survival and Brain-Age Prediction](#survival-and-brain-age-prediction)
@@ -208,7 +208,7 @@ python -m torch.distributed.run --nnodes 1 --nproc_per_node 1 --master_port 1234
   meta.save_path_checkpoint=/path/to/checkpoints/neurojepa
 ```
 
-### Pretraining Logs and Training Stability
+### Pretraining Logs
 
 To support reproducibility and provide a reference for expected training behavior, we make our pretraining logs publicly available through a Weights & Biases report: [W&B pretraining report](https://api.wandb.ai/links/notody/7t7d4dks). The full pretraining log comes from the checkpoint with best performance achieved (the checkpoint we shared).
 
@@ -265,7 +265,7 @@ Adjust account, partition, node count, data paths, cache paths, and checkpoint l
 
 ## MRI Registration
 
-Neuro-JEPA is pretrained on scans registered to MNI152 standard space. For best transfer performance, we recommend applying the same registration protocol before fine-tuning or inference.
+Neuro-JEPA is pretrained on scans affine registered to MNI152 standard space. For best transfer performance, we recommend applying the same registration protocol before fine-tuning or inference.
 
 The `registration/` directory provides SLURM array scripts for aligning raw MRI scans to MNI152 space. All modalities use `fslreorient2std`, `robustfov`, N4 bias-field correction, and **12-DOF affine registration** with FSL FLIRT and spline interpolation. Update `CSV_FILE`, `OUTPUT_DIR`, and template paths at the top of each script before submitting jobs. FSL is chosen for affine registration because of its faster processing speed for our large scale studies.
 
