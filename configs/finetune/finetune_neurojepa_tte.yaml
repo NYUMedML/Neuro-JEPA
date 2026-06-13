@@ -1,0 +1,105 @@
+defaults:
+  - _self_
+
+data:
+  train_csv_path: /path/to/data/registration/ADNI/ADNI1_T1w_tte_train.csv
+  val_csv_path: /path/to/data/registration/ADNI/ADNI1_T1w_tte_val.csv
+  test_csv_path: /path/to/data/registration/ADNI/ADNI1_T1w_tte_test.csv
+
+  img_col: img_path
+  time_col: days_until_conversion
+  event_col: conversion_label
+
+  normalize_time: false
+  cache_dir: /path/to/cache/downstream_cache/temp_cache_register_ADNI1_1mm_ls
+  save_path: /path/to/downstream_pkl/test_preds.pkl
+
+  img_size: [96, 108, 96]
+  patch_size: [12, 12, 12]
+  batch_size: 64
+  num_workers: 4
+  pin_mem: true
+  use_foreground_mask: false
+
+meta:
+  dtype: bfloat16
+  eval_freq: 100
+  load_checkpoint: false
+  load_path_checkpoint: /path/to/checkpoints/checkpoints_dir/latest.pt
+  checkpoint_source: local
+  hf_model_id: NYUMedML/Neuro-JEPA
+  hf_revision: null
+  hf_checkpoint_filename: null
+  hf_checkpoint_key: null
+  hf_cache_dir: null
+  hf_token: true
+  hf_subfolder: null
+  checkpoint_strict: false
+  save_path_checkpoint: /path/to/checkpoints/checkpoints_dir/
+  read_checkpoint: null
+  save_checkpoint_freq: 5
+  seed: 42
+  use_sdpa: true
+  compile_model: false
+
+model:
+  model_name: "vit"
+  backbone_name: vit_base
+  img_size: [96, 108, 96]
+  patch_size: [12, 12, 12]
+  in_chans: 1
+  uniform_power: true
+  use_activation_checkpointing: true
+  use_rope: true
+  use_silu: false
+  use_pred_silu: false
+  wide_silu: true
+  use_moe: true
+  moe_params:
+    moe_type: "bias"
+    dim: 768
+    n_shared_experts: 2
+    n_routed_experts: 16
+    n_activated_experts: 6
+    moe_inter_dim: 384
+    score_func: softmax
+    route_scale: 4.0
+    bias_clip: 0.0
+    bias_update_rate: 0.0
+    bias_update_rate_min: 0.0
+    bias_update_rate_max: 0.0
+    div_loss_factor: 0.0
+    moe_layer_indices:
+    - 1
+    - 3
+    - 5
+    - 7
+    - 9
+    - 11
+
+optimization:
+  is_anneal: False
+  num_epochs: 15
+  final_lr: 1.5e-8
+  final_weight_decay: 0.01
+  ipe: -1
+  ipe_scale: 1.0
+  lr: 1.5e-5
+  start_lr: 1.5e-8
+  warmup: 2
+  weight_decay: 0.01
+  lr_scale: 1.0
+  mixed_precision: true
+  betas:
+  - 0.9
+  - 0.999
+  eps: 1e-08
+
+log:
+  filename: "survival_finetune"
+  output_dir: /path/to/Neuro-JEPA/cfg_settings/finetune
+
+wandb:
+  project: Neuro-JEPA-TTE-Survival-Analysis
+  entity: "your-entity"
+  wandb_enable: false

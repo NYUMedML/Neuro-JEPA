@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neurojepa"
+version = "0.1.0"
+description = "Neuro-JEPA: Learning Sparse Latent Predictive Foundation Model for Multimodal Neuroimaging"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+authors = [
+    { name = "Haoxu Huang" },
+]
+keywords = [
+    "self-supervised-learning",
+    "medical-imaging",
+    "neuroimaging",
+    "v-jepa",
+    "3d-vision-transformer",
+    "mri",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: Other/Proprietary License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+dynamic = ["dependencies"]
+
+[project.urls]
+Repository = "https://github.com/NYUMedML/Neuro-JEPA"
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.isort]
+profile = "black"
+line_length = 119
+
+[tool.black]
+line-length = 119

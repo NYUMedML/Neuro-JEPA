@@ -1,0 +1,108 @@
+data:
+  dataset_type: "3D-MRI"
+  train_csv_path: /path/to/data/binds_preprocess/I0001_MM_train.csv
+  val_csv_path: /path/to/data/binds_preprocess/I0001_MM_val.csv
+  test_csv_path: /path/to/data/binds_preprocess/I0001_MM_test.csv
+  cache_dir: /path/to/cache/downstream_cache/temp_cache_BINDS_1mm_ls
+  batch_size: 64
+  samples_per_epoch: 5000
+  img_size: [96, 108, 96]
+  patch_size: [12, 12, 12]
+  num_workers: 4
+  pin_mem: true
+  num_classes: 15
+  img_col: T1w_path
+  img_flag: T1w_FLAG
+  label_cols:
+  - Edema
+  - Enhancement
+  - Hematoma
+  - Infarct
+  - Ischemic
+  - Mass_effect
+  - Midline_shift
+  - Multiple_Sclerosis
+  - Schwannoma
+  - glioblastoma_multiforme
+  - gliosis
+  - Astrocytoma
+  - Atrophy
+  - Cancer
+  - Cyst
+meta:
+  dtype: bfloat16
+  eval_freq: 100
+  load_checkpoint: true
+  load_path_checkpoint: /path/to/checkpoints/checkpoints_dir/latest.pt
+  checkpoint_source: local
+  hf_model_id: NYUMedML/Neuro-JEPA
+  hf_revision: null
+  hf_checkpoint_filename: null
+  hf_checkpoint_key: null
+  hf_cache_dir: null
+  hf_token: true
+  hf_subfolder: null
+  checkpoint_strict: false
+  save_path_checkpoint: /path/to/checkpoints/checkpoints_dir/
+  read_checkpoint: null
+  save_checkpoint_freq: 5
+  seed: 42
+  use_sdpa: true
+  compile_model: false
+model:
+  model_name: "vit"
+  backbone_name: vit_base
+  img_size: [96, 108, 96]
+  patch_size: [12, 12, 12]
+  in_chans: 1
+  uniform_power: true
+  use_activation_checkpointing: true
+  use_rope: true
+  use_silu: false
+  use_pred_silu: false
+  wide_silu: true
+  use_moe: true
+  moe_params:
+    moe_type: "bias"
+    dim: 768
+    n_shared_experts: 2
+    n_routed_experts: 16
+    n_activated_experts: 6
+    moe_inter_dim: 384
+    score_func: softmax
+    route_scale: 4.0
+    bias_clip: 0.3
+    bias_update_rate: 1e-4
+    bias_update_rate_min: 1e-4
+    bias_update_rate_max: 1e-4
+    moe_layer_indices:
+    - 1
+    - 3
+    - 5
+    - 7
+    - 9
+    - 11
+optimization:
+  is_anneal: False
+  num_epochs: 10
+  final_lr: 1e-8
+  final_weight_decay: 0.04
+  ipe: -1
+  ipe_scale: 1.0
+  lr: 1e-4
+  start_lr: 1e-8
+  warmup: 2
+  weight_decay: 0.04
+  mixed_precision: true
+  betas:
+  - 0.9
+  - 0.999
+  eps: 1e-08
+log:
+  filename: "monitor"
+  output_dir: /path/to/Neuro-JEPA/cfg_settings/monitor
+  output_pkl_dir: /path/to/Neuro-JEPA/monitor_ablation_pkl
+wandb:
+  project: "Neuro-JEPA-BIND-T1w-Monitor"
+  entity: "your-entity"
+  wandb_enable: true

@@ -1,0 +1,107 @@
+data:
+  dataset_type: "3D-MRI"
+  train_csv_path: /path/to/data/full_clear_nyu_pretrain_qc3.csv
+  cache_dir: /path/to/cache/pretrain_cache/temp_cache_lr_RAS_T1w+T2w+FLAIR_1mm
+  batch_size: 48
+  img_size: [96, 108, 96]
+  patch_size: [12, 12, 12]
+  num_workers: 16
+  pin_mem: true
+  foreground_threshold: 0.0
+  min_foreground_fraction: 0.1
+data_aug:
+  auto_augment: false
+loss:
+  loss_name: "l1"
+  loss_exp: 1.0
+  bg_weight: 0.1
+mask:
+- aspect_ratio:
+  - 0.75
+  - 1.5
+  num_blocks: 32
+  total_mask_ratio: 0.75
+  spatial_scale:
+  - 0.0
+  - 0.2
+  depth_scale:
+  - 0.0
+  - 1.0
+- aspect_ratio:
+  - 0.75
+  - 1.5
+  num_blocks: 16
+  total_mask_ratio: 0.75
+  spatial_scale:
+  - 0.2
+  - 0.5
+  depth_scale:
+  - 0.0
+  - 1.0
+- aspect_ratio:
+  - 0.75
+  - 1.5
+  num_blocks: 4
+  total_mask_ratio: 0.75
+  spatial_scale:
+  - 0.5
+  - 0.7
+  depth_scale:
+  - 0.0
+  - 1.0
+meta:
+  dtype: bfloat16
+  eval_freq: 100
+  load_checkpoint: true
+  load_path_checkpoint: /path/to/checkpoints/checkpoints_dir/e200.pt
+  save_path_checkpoint: /path/to/checkpoints/checkpoints_dir/cooldown
+  read_checkpoint: null
+  save_checkpoint_freq: 5
+  seed: 239
+  use_sdpa: true
+  compile_model: true
+model:
+  model_name: "jepa"
+  backbone_name: vit_base
+  img_size: [96, 108, 96]
+  patch_size: [12, 12, 12]
+  in_chans: 1
+  pred_depth: 12
+  pred_embed_dim: 384
+  pred_num_heads: 12
+  uniform_power: true
+  use_activation_checkpointing: false
+  use_mask_tokens: true
+  use_rope: true
+  use_silu: false
+  use_pred_silu: false
+  wide_silu: true
+  zero_init_mask_tokens: true
+optimization:
+  is_anneal: true
+  ema:
+  - 0.99925
+  - 0.99925
+  num_epochs: 40
+  final_lr: 1.0e-06
+  final_weight_decay: 0.04
+  ipe: 1600
+  ipe_scale: 1.0
+  lr: 0.000525
+  start_lr: 0.0001
+  warmup: 0
+  weight_decay: 0.04
+  grad_clip: 1.0
+  mixed_precision: true
+  betas:
+  - 0.9
+  - 0.999
+  eps: 1e-08
+log:
+  filename: "cooldown"
+  log_freq: 50
+  output_dir: /path/to/cfg_settings/cooldown
+wandb:
+  project: "Neuro-JEPA-Cooldown-base"
+  entity: "your-entity"
+  wandb_enable: true

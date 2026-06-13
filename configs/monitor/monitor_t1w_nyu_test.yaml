@@ -1,0 +1,116 @@
+data:
+  dataset_type: "3D-MRI"
+  train_csv_path: /gpfs/data/denizlab/Users/hh2740/git_backups/MedSSL-3D-Brain/datasets/train_MRI_T1w_labels.csv
+  val_csv_path: /gpfs/data/denizlab/Users/hh2740/git_backups/MedSSL-3D-Brain/datasets/val_MRI_T1w_labels.csv
+  test_csv_path: /gpfs/data/denizlab/Users/hh2740/git_backups/MedSSL-3D-Brain/datasets/test_MRI_T1w_labels.csv
+  cache_dir: /gpfs/data/razavianlab/data/mri/pretrain_cache/temp_cache_lr_RAS_T1w+T2w+FLAIR_1mm
+  batch_size: 64
+  samples_per_epoch: 5000
+  img_size: [96, 108, 96]
+  patch_size: [12, 12, 12]
+  num_workers: 4
+  pin_mem: true
+  num_classes: 6
+  img_col: img_path
+  img_flag: None
+  use_foreground_mask: false
+  demo_cols:
+  - Manufacturer
+  - gender
+  - age_group
+  - race_group
+  label_cols:
+  - cancer
+  - hydrocephalus
+  - edema
+  - dementia
+  #- IPH
+  #- IVH
+  #- SDH
+  #- EDH
+  #- SAH
+  #- ICH
+  #- fracture
+  #- Schizophrenia
+  - Major Depressive Disorder
+  #- PTSD
+  #- ADHD
+  - hemorrhage
+meta:
+  dtype: bfloat16
+  eval_freq: 100
+  load_checkpoint: true
+  load_path_checkpoint: /gpfs/data/denizlab/Users/hh2740/git_backups/MedSSL-3D-v2/checkpoints/test/latest.pt
+  checkpoint_source: local
+  hf_model_id: NYUMedML/Neuro-JEPA
+  hf_revision: null
+  hf_checkpoint_filename: null
+  hf_checkpoint_key: null
+  hf_cache_dir: null
+  hf_token: true
+  hf_subfolder: null
+  checkpoint_strict: false
+  save_path_checkpoint: /gpfs/data/denizlab/Users/hh2740/git_backups/MedSSL-3D-v2/checkpoints/test
+  read_checkpoint: null
+  save_checkpoint_freq: 5
+  seed: 42
+  use_sdpa: true
+  compile_model: true
+model:
+  model_name: "vit"
+  backbone_name: vit_base
+  img_size: [96, 108, 96]
+  patch_size: [12, 12, 12]
+  in_chans: 1
+  uniform_power: true
+  use_activation_checkpointing: true
+  use_rope: true
+  use_silu: false
+  use_pred_silu: false
+  wide_silu: true
+  use_moe: true
+  moe_params:
+    moe_type: "bias"
+    dim: 768
+    n_shared_experts: 2
+    n_routed_experts: 16
+    n_activated_experts: 6
+    moe_inter_dim: 384
+    score_func: softmax
+    route_scale: 4.0
+    bias_clip: 0.0
+    bias_update_rate: 0.0
+    bias_update_rate_min: 0.0
+    bias_update_rate_max: 0.0
+    div_loss_factor: 0.0
+    moe_layer_indices:
+    - 1
+    - 3
+    - 5
+    - 7
+    - 9
+    - 11
+optimization:
+  is_anneal: False
+  num_epochs: 10
+  final_lr: 1e-8
+  final_weight_decay: 0.04
+  ipe: -1
+  ipe_scale: 1.0
+  lr: 1e-4
+  start_lr: 1e-8
+  warmup: 2
+  weight_decay: 0.04
+  mixed_precision: true
+  betas:
+  - 0.9
+  - 0.999
+  eps: 1e-08
+log:
+  filename: "monitor"
+  output_dir: /gpfs/data/denizlab/Users/hh2740/git_backups/MedSSL-3D-v2/cfg_settings/monitor
+  output_pkl_dir: /gpfs/data/denizlab/Users/hh2740/git_backups/MedSSL-3D-v2/monitor_ablation_pkl
+wandb:
+  project: "VJEPA-MoE-MRI-Monitor"
+  entity: "notody"
+  wandb_enable: true

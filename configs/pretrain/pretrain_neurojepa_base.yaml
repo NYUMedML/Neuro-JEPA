@@ -1,0 +1,129 @@
+data:
+  dataset_type: "3D-MRI"
+  train_csv_path: /path/to/data/full_clear_nyu_pretrain_qc3.csv
+  cache_dir: /path/to/cache/pretrain_cache/temp_cache_lr_RAS_T1w+T2w+FLAIR_1mm
+  batch_size: 48
+  img_size: [96, 108, 96]
+  patch_size: [12, 12, 12]
+  num_workers: 16
+  pin_mem: true
+  foreground_threshold: 0.0
+  min_foreground_fraction: 0.1
+data_aug:
+  auto_augment: false
+loss:
+  loss_name: "l1"
+  loss_exp: 1.0
+  bg_weight: 0.1
+mask:
+- aspect_ratio:
+  - 0.75
+  - 1.5
+  num_blocks: 32
+  total_mask_ratio: 0.75
+  spatial_scale:
+  - 0.0
+  - 0.2
+  depth_scale:
+  - 0.0
+  - 1.0
+- aspect_ratio:
+  - 0.75
+  - 1.5
+  num_blocks: 16
+  total_mask_ratio: 0.75
+  spatial_scale:
+  - 0.2
+  - 0.5
+  depth_scale:
+  - 0.0
+  - 1.0
+- aspect_ratio:
+  - 0.75
+  - 1.5
+  num_blocks: 4
+  total_mask_ratio: 0.75
+  spatial_scale:
+  - 0.5
+  - 0.7
+  depth_scale:
+  - 0.0
+  - 1.0
+meta:
+  dtype: bfloat16
+  eval_freq: 100
+  load_checkpoint: false
+  load_path_checkpoint: /path/to/checkpoints/checkpoints_dir/latest.pt
+  save_path_checkpoint: /path/to/checkpoints/checkpoints_dir
+  read_checkpoint: null
+  save_checkpoint_freq: 5
+  seed: 42
+  use_sdpa: true
+  compile_model: true
+model:
+  model_name: "jepa"
+  backbone_name: vit_base
+  img_size: [96, 108, 96]
+  patch_size: [12, 12, 12]
+  in_chans: 1
+  pred_depth: 12
+  pred_embed_dim: 384
+  pred_num_heads: 12
+  uniform_power: true
+  use_activation_checkpointing: false
+  use_mask_tokens: true
+  use_rope: true
+  use_silu: false
+  use_pred_silu: false
+  wide_silu: true
+  zero_init_mask_tokens: true
+  foreground_aware: true
+  use_moe: false
+  moe_params:
+    moe_type: "bias"
+    dim: 768
+    n_shared_experts: 2
+    n_routed_experts: 16
+    n_activated_experts: 6
+    moe_inter_dim: 384
+    score_func: softmax
+    route_scale: 4.0
+    bias_clip: 0.3
+    bias_update_rate: 1e-4
+    bias_update_rate_min: 1e-4
+    bias_update_rate_max: 1e-4
+    moe_layer_indices:
+    - 1
+    - 3
+    - 5
+    - 7
+    - 9
+    - 11
+optimization:
+  is_anneal: False
+  ema:
+  - 0.99925
+  - 0.99925
+  num_epochs: 200
+  final_lr: 0.000525
+  final_weight_decay: 0.04
+  ipe: 1600
+  ipe_scale: 1.0
+  lr: 0.000525
+  start_lr: 0.0001
+  warmup: 40
+  weight_decay: 0.04
+  grad_clip: 1.0
+  mixed_precision: true
+  betas:
+  - 0.9
+  - 0.999
+  eps: 1e-08
+log:
+  filename: "pretrain"
+  log_freq: 1
+  output_dir: /path/to/cfg_settings/pretrain
+wandb:
+  project: "Neuro-JEPA-Pretrain-base"
+  entity: "your-entity"
+  wandb_enable: true
