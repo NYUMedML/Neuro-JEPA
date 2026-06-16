@@ -3,7 +3,7 @@
 
  [![Model License: CC BY-NC-ND 4.0](https://img.shields.io/badge/Model_License-CC_BY--NC--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/deed.en) [![Code License: MIT](https://img.shields.io/badge/Code_License-MIT-green.svg)](https://opensource.org/license/MIT) [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 
-📄 [Paper](https://arxiv.org/pdf/2606.14957) | 🤗 [Weights](https://huggingface.co/NYUMedML/Neuro-JEPA) | 📚 [BibTeX](#citation)
+📄 [Paper](https://arxiv.org/abs/2606.14957) | 🤗 [Weights](https://huggingface.co/NYUMedML/Neuro-JEPA) | 📚 [BibTeX](#citation)
 
 </div>
 
