@@ -75,7 +75,7 @@ def loading_transforms(
             ),
             transforms.Resized(
                 keys=["image", "label"],
-                spatial_size=roi,
+                spatial_size=[100, 120, 100],
                 allow_missing_keys=True,
             ),
         ]
