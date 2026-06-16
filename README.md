@@ -3,7 +3,7 @@
 
  [![Model License: CC BY-NC-ND 4.0](https://img.shields.io/badge/Model_License-CC_BY--NC--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/deed.en) [![Code License: MIT](https://img.shields.io/badge/Code_License-MIT-green.svg)](https://opensource.org/license/MIT) [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 
-📄 [Paper](https://arxiv.org/abs/xxx.xxxxx) | 🤗 [Weights](https://huggingface.co/NYUMedML/Neuro-JEPA) | 📚 [BibTeX](#citation)
+📄 [Paper](https://arxiv.org/pdf/2606.14957) | 🤗 [Weights](https://huggingface.co/NYUMedML/Neuro-JEPA) | 📚 [BibTeX](#citation)
 
 </div>
 
@@ -382,11 +382,14 @@ We empirically observed that MoE for neuroimaging can have each expert route to 
 If this repository or the accompanying paper is useful for your research, please cite:
 
 ```bibtex
-@article{huang2026neurojepa,
-  title={Learning Sparse Latent Predictive Foundation Model for Multimodal Neuroimaging},
-  author={Haoxu Huang, Long Chen, Jingyun Chen Jinu Hyun, James Loftus, Kara Melmed, Daniel Orringer, Jennifer Frontera, Seena Dehkharghani, Arjun Masurkar, and Narges Razavian},
-  journal={arXiv preprint arXiv:xxxx.xxxxx},
-  year={2026}
+@misc{huang2026learningsparselatentpredictive,
+      title={Learning Sparse Latent Predictive Foundation Model for Multimodal Neuroimaging}, 
+      author={Haoxu Huang and Long Chen and Jingyun Chen and Jinu Hyun and James Ryan Loftus and Kara Melmed and Daniel Orringer and Jennifer Frontera and Seena Dehkharghani and Arjun Masurkar and Narges Razavian},
+      year={2026},
+      eprint={2606.14957},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2606.14957}, 
 }
 ```
 
