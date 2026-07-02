@@ -216,6 +216,8 @@ Because the original JEPA objective uses an exponential moving average (EMA) tar
 
 ### Fine-Tuning
 
+For best fine-tuning performance, we recommend trying both settings: with bias updates enabled and disabled. Bias updates are controlled by `moe_bias_update` in `neurojepa.models.utils.moe`. To disable them, set every `bias_update_rate` value to `0.0` in the relevant config YAML file.
+
 Unimodal classification or regression:
 
 ```bash

@@ -65,7 +65,8 @@ model:
     score_func: softmax
     route_scale: 4.0
     bias_update_rate: 0.0
-    div_loss_factor: 0.0
+    bias_update_rate_min: 0.0
+    bias_update_rate_max: 0.0
     moe_layer_indices:
     - 1
     - 3

@@ -61,7 +61,6 @@ model:
     bias_update_rate: 1e-4
     bias_update_rate_min: 1e-4
     bias_update_rate_max: 1e-4
-    div_loss_factor: 0.0
     moe_layer_indices:
     - 1
     - 3
