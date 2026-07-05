@@ -75,24 +75,6 @@ def train_one_epoch(
     if use_grad_scaler and scaler is None:
         raise ValueError("float16 mixed precision requires a GradScaler, but scaler=None was provided.")
 
-    def _current_grad_norm(parameters) -> torch.Tensor:
-        total_norm_sq = None
-        for p in parameters:
-            if p.grad is None:
-                continue
-            grad = p.grad.detach()
-            if grad.is_sparse:
-                grad = grad.coalesce().values()
-            grad_norm_sq = grad.float().pow(2).sum()
-            total_norm_sq = (
-                grad_norm_sq
-                if total_norm_sq is None
-                else total_norm_sq + grad_norm_sq.to(total_norm_sq.device)
-            )
-        if total_norm_sq is None:
-            return torch.zeros((), device=device, dtype=torch.float32)
-        return total_norm_sq.sqrt()
-    
     # Deferred metric logging. Accumulate on GPU, sync every LOG_FREQ steps
     LOG_FREQ = getattr(cfg.log, 'log_freq', 100)
     _loss_acc = torch.zeros(1, device=device, dtype=torch.float32)
@@ -141,7 +123,7 @@ def train_one_epoch(
             z = predictor(z, masks_enc, masks_pred)
             # loss
             loss = loss_fn(z, h, masks_pred, cfg.loss.loss_exp, fg_map=fg_map,
-                          bg_weight=getattr(cfg.loss, 'bg_weight', 1.0))  # jepa prediction loss
+                          bg_weight=getattr(cfg.loss, 'bg_weight', 1.0))
 
         # Check for finite loss.
         # GradScaler handles fp16 inf/nan gradients. bf16 does not use loss
@@ -166,24 +148,19 @@ def train_one_epoch(
         grad_norm = None
 
         # backward with/without loss scaling
+        _clip_max = grad_clip if grad_clip > 0 else float('inf')
         if use_grad_scaler:
             scaler.scale(loss).backward()
             scaler.unscale_(optimizer)
-            grad_norm = _current_grad_norm(trainable_params)
-            if grad_clip > 0:
-                torch.nn.utils.clip_grad_norm_(trainable_params, grad_clip)
-
+            grad_norm = torch.nn.utils.clip_grad_norm_(trainable_params, _clip_max)
             scaler.step(optimizer)
             scaler.update()
         else:
             loss.backward()
-            grad_norm = _current_grad_norm(trainable_params)
-            if grad_clip > 0:
-                torch.nn.utils.clip_grad_norm_(trainable_params, grad_clip)
+            grad_norm = torch.nn.utils.clip_grad_norm_(trainable_params, _clip_max)
             optimizer.step()
 
-        # Zero gradients immediately after step — set_to_none=True releases
-        # gradient memory before the (potentially large) momentum update.
+        # zero gradients
         optimizer.zero_grad(set_to_none=True)
 
         # MoE bias update and violation calculation
@@ -207,7 +184,7 @@ def train_one_epoch(
             _grad_norm_latest = grad_norm.detach().float().nan_to_num()
         _acc_count += 1
 
-        # Periodic sync: all-reduce + .item() + log every LOG_FREQ steps
+        # All-Reduce + .item() + log every LOG_FREQ steps
         if (_acc_count >= LOG_FREQ or (idx + 1) == ipe) and _acc_count > 0:
             _reduced_loss = all_reduce_mean(_loss_acc / _acc_count)
             loss_value = _reduced_loss.item() if isinstance(_reduced_loss, torch.Tensor) else float(_reduced_loss)
