@@ -269,7 +269,9 @@ Adjust account, partition, node count, data paths, cache paths, and checkpoint l
 
 Neuro-JEPA is pretrained on scans affine registered to MNI152 standard space. For best transfer performance, we recommend applying the same registration protocol before fine-tuning or inference.
 
-The `registration/` directory provides SLURM array scripts for aligning raw MRI scans to MNI152 space. All modalities use `fslreorient2std`, `robustfov`, N4 bias-field correction, and **12-DOF affine registration** with FSL FLIRT and spline interpolation. Update `CSV_FILE`, `OUTPUT_DIR`, and template paths at the top of each script before submitting jobs. FSL is chosen for affine registration because of its faster processing speed for our large scale studies.
+The `registration/` directory provides SLURM array scripts for aligning raw MRI scans to MNI152 space. All modalities use `fslreorient2std`, `robustfov`, N4 bias-field correction, and **12-DOF affine registration** with FSL FLIRT and spline interpolation. Update `CSV_FILE`, `OUTPUT_DIR`, and template paths at the top of each script before submitting jobs. FSL is chosen for affine registration over ANTs in our study because of its faster processing speed for our large scale studies.
+
+The provided scripts present registration for original scans without undergoing skull stripping, where the scans are registered to non skull stripped templates. For scans that are originally provided with skull stripping, directly register the scans to skull stripped templates is required to prevent misalignment.
 
 ### Templates
 
