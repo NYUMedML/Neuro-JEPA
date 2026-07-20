@@ -42,14 +42,15 @@ tail -n +2 "$CSV_FILE" | while IFS=, read -r file_path; do
     robustfov -i "${out_dir}/${base}_reoriented.nii.gz" -r "${out_dir}/${base}_acpc.nii.gz"
     N4BiasFieldCorrection -d 3 -i "${out_dir}/${base}_acpc.nii.gz" \
           -o "${out_dir}/${base}_n4.nii.gz" || continue
-    mri_synthstrip -i "${out_dir}/${base}_n4.nii.gz" -o "${out_dir}/${base}_brain.nii.gz" || continue
-    flirt -in "${out_dir}/${base}_brain.nii.gz" -ref "$template_img" \
+    flirt -in "${out_dir}/${base}_n4.nii.gz" -ref "$template_img" \
           -omat "${out_dir}/${base}_affine.mat" -dof 12 -cost corratio
-    flirt -interp spline -in "${out_dir}/${base}_brain.nii.gz" -ref "$template_img" \
-          -applyxfm -init "${out_dir}/${base}_affine.mat" -out "${out_dir}/${base}.nii.gz"
+    flirt -interp spline -in "${out_dir}/${base}_n4.nii.gz" -ref "$template_img" \
+          -applyxfm -init "${out_dir}/${base}_affine.mat" \
+          -out "${out_dir}/${base}_registered.nii.gz"
+    mri_synthstrip -i "${out_dir}/${base}_registered.nii.gz" -o "${out_dir}/${base}.nii.gz"
 
     rm -f "${out_dir}/${base}_reoriented.nii.gz" "${out_dir}/${base}_acpc.nii.gz" \
-          "${out_dir}/${base}_n4.nii.gz" "${out_dir}/${base}_brain.nii.gz" \
+          "${out_dir}/${base}_n4.nii.gz" "${out_dir}/${base}_registered.nii.gz" \
           "${out_dir}/${base}_affine.mat"
     echo "Completed: $base -> $out_dir"
 done

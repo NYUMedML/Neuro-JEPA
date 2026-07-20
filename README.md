@@ -287,9 +287,9 @@ Place downloaded templates in a shared filesystem location and set the `template
 1. `fslreorient2std`: reorient to standard orientation.
 2. `robustfov`: apply robust field-of-view cropping / AC-PC alignment.
 3. `N4BiasFieldCorrection`: correct low-frequency intensity bias fields.
-4. `mri_synthstrip`: skull-strip the bias-corrected volume.
-5. `flirt`: estimate a 12-DOF affine transform to the MNI152 T1 template with correlation-ratio cost.
-6. `flirt --applyxfm`: apply the transform with spline interpolation.
+4. `flirt`: estimate a 12-DOF affine transform to the MNI152 T1 template with correlation-ratio cost.
+5. `flirt --applyxfm`: apply the transform with spline interpolation.
+6. `mri_synthstrip`: skull-strip the bias-corrected volume.
 
 **T2w** (`registration/register_t2w.sh`)
 
