@@ -3,13 +3,14 @@
 
  [![Model License: CC BY-NC-ND 4.0](https://img.shields.io/badge/Model_License-CC_BY--NC--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/deed.en) [![Code License: MIT](https://img.shields.io/badge/Code_License-MIT-green.svg)](https://opensource.org/license/MIT) [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 
-📄 [Paper](https://arxiv.org/abs/2606.14957) | 🤗 [Weights](https://huggingface.co/NYUMedML/Neuro-JEPA) | 📚 [BibTeX](#citation)
+📄 [Paper](https://arxiv.org/abs/2606.14957) | 🤗 [Base Weights](https://huggingface.co/NYUMedML/Neuro-JEPA) | 🤗 [Large Weights](https://huggingface.co/NYUMedML/Neuro-JEPA-Large) | 📚 [BibTeX](#citation)
 
 </div>
 
 ## Table of Contents
 
 - [Overview](#overview)
+- [Updates](#updates)
 - [TL;DR](#tldr)
 - [Repository Layout](#repository-layout)
 - [Installation](#installation)
@@ -41,13 +42,17 @@ This repository contains the official implementation of **Neuro-JEPA**, a sparse
 
 The model is evaluated across one of the broadest neuroimaging benchmarks assembled for this setting: **12 public research cohorts** and **three large clinical cohorts** from NYU Langone, NYU Long Island, and Massachusetts General Hospital. Across **47 downstream tasks**, Neuro-JEPA evaluated with diagnosis, prognosis, regression, multimodal learning, and time-to-event prediction.
 
-Neuro-JEPA combines JEPA pretraining with foreground-aware objectives, improved masking strategies, and a sparse Mixture-of-Experts backbone. In our experiments, it consistently improves over prior neuroimaging foundation models, including average gains of **4.4-6.4% AUROC** and **6.4-9.4% AUPRC** on unimodal tasks, **5.8-7.6% AUROC** and **6.2-8.5% AUPRC** on multimodal tasks, and up to **15%** improvement under few-shot settings.
+Neuro-JEPA combines JEPA pretraining with foreground-aware objectives, improved masking strategies, and a sparse Mixture-of-Experts backbone. On public unimodal tasks, **Neuro-JEPA-B (Base)** improves average AUROC by **4.4-6.4 percentage points** and AUPRC by **6.4-9.4 percentage points**, while **Neuro-JEPA-L (Large)** improves average AUROC by **6.0-8.0 percentage points** and AUPRC by **10.2-13.2 percentage points**, compared with the VoCo-B, BrainIAC, and NeuroVFM baselines. Our experiments also show gains of **5.8-7.6% AUROC** and **6.2-8.5% AUPRC** on multimodal tasks, and up to **15%** improvement under few-shot settings.
 
 Please refer to the accompanying paper for the full method, implementation details, and experimental protocol.
 
 <img src="assets/overview.png" alt="Overview of the Neuro-JEPA study" width="80%">
 
 **Figure 1. Overview of the study.** Neuro-JEPA is pretrained on multimodal MRI data and evaluated across diagnosis, prognosis, time-to-event prediction, and age-prediction tasks. The study summarizes modality coverage, disease distributions, patient geography, model architecture, and downstream performance across public and clinical cohorts.
+
+## Updates
+
+- **9/16/2026 — Neuro-JEPA-Large is now available:** Access the **Neuro-JEPA-L** weights on [Hugging Face](https://huggingface.co/NYUMedML/Neuro-JEPA-Large) and see [Weight Sharing](#weight-sharing) for loading instructions.
 
 ## TL;DR
 
@@ -139,18 +144,27 @@ All entrypoints use Hydra. Configuration names correspond to YAML filenames unde
 
 ### Weight Sharing
 
-Pretrained model weights are made available upon request via Hugging Face at [HuggingFace Model Card](https://huggingface.co/NYUMedML/Neuro-JEPA). The model weights are distributed for non-commercial research purposes under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0).
+Pretrained weights for both model sizes are available upon request via Hugging Face. The names below match the **Neuro-JEPA-B** and **Neuro-JEPA-L** results in the benchmark tables.
 
-Once the request is approved, the model weights can be loaded as
+| Model | Size | Hugging Face |
+| --- | --- | --- |
+| **Neuro-JEPA-B** | Base | [NYUMedML/Neuro-JEPA](https://huggingface.co/NYUMedML/Neuro-JEPA) |
+| **Neuro-JEPA-L** | Large | [NYUMedML/Neuro-JEPA-Large](https://huggingface.co/NYUMedML/Neuro-JEPA-Large) |
 
-```bash
+The model weights are distributed for non-commercial research purposes under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0).
+
+Once access is approved, select either repository ID to load the corresponding model. The loader reads the model architecture from the repository's `config.json`.
+
+```python
 import torch
 from neurojepa.utils.init_utils import load_backbone_from_hf
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
+model_id = "NYUMedML/Neuro-JEPA"  # Neuro-JEPA-B (Base)
+# model_id = "NYUMedML/Neuro-JEPA-Large"  # Neuro-JEPA-L (Large)
 
 backbone = load_backbone_from_hf(
-    "NYUMedML/Neuro-JEPA",
+    model_id,
     device=device,
 )
 ```
@@ -170,7 +184,7 @@ python -m torch.distributed.run --nnodes 1 --nproc_per_node 1 --master_port 1234
   meta.load_path_checkpoint=/path/to/checkpoints/latest.pt
 ```
 
-To load the released Hugging Face weights instead:
+To load the Base weights from Hugging Face:
 
 ```bash
 python -m torch.distributed.run --nnodes 1 --nproc_per_node 1 --master_port 12345 \
@@ -181,6 +195,8 @@ python -m torch.distributed.run --nnodes 1 --nproc_per_node 1 --master_port 1234
   meta.hf_checkpoint_filename=model.safetensors \
   meta.hf_token=true
 ```
+
+For the Large weights, set `meta.hf_model_id=NYUMedML/Neuro-JEPA-Large` and use a configuration whose backbone architecture matches the Large model. These entrypoints build the backbone from the local configuration before loading weights.
 
 ### Pretraining
 
@@ -348,7 +364,8 @@ Values are reported as mean with 95% confidence intervals. Bold indicates the be
 | VoCo-B | 0.721 [0.689, 0.754] | 0.573 [0.513, 0.635] | 0.762 [0.726, 0.793] | 0.338 [0.265, 0.412] | 0.735 [0.702, 0.764] | 0.295 [0.240, 0.354] | 0.717 [0.693, 0.741] | 0.233 [0.196, 0.269] |
 | BrainIAC | 0.728 [0.705, 0.751] | 0.555 [0.494, 0.618] | 0.730 [0.697, 0.761] | 0.296 [0.226, 0.370] | 0.674 [0.643, 0.704] | 0.212 [0.162, 0.266] | 0.655 [0.636, 0.673] | 0.179 [0.148, 0.211] |
 | NeuroVFM | 0.741 [0.706, 0.774] | 0.585 [0.526, 0.648] | 0.772 [0.743, 0.801] | 0.343 [0.271, 0.422] | 0.739 [0.713, 0.762] | 0.217 [0.175, 0.260] | 0.725 [0.705, 0.745] | 0.237 [0.199, 0.277] |
-| **Neuro-JEPA** | **0.785 [0.760, 0.811]** | **0.649 [0.588, 0.705]** | **0.825 [0.796, 0.850]** | **0.457 [0.382, 0.535]** | **0.806 [0.780, 0.828]** | **0.383 [0.322, 0.442]** | **0.741 [0.720, 0.761]** | **0.253 [0.216, 0.292]** |
+| **Neuro-JEPA-B** | 0.785 [0.760, 0.811] | 0.649 [0.588, 0.705] | 0.825 [0.796, 0.850] | 0.457 [0.382, 0.535] | 0.806 [0.780, 0.828] | 0.383 [0.322, 0.442] | 0.741 [0.720, 0.761] | 0.253 [0.216, 0.292] |
+| **Neuro-JEPA-L** | **0.801** [0.775, 0.828] | **0.687** [0.631, 0.740] | **0.838** [0.812, 0.862] | **0.498** [0.430, 0.567] | **0.810** [0.779, 0.838] | **0.407** [0.344, 0.465] | **0.748** [0.726, 0.770] | **0.277** [0.239, 0.317] |
 
 ### Survival and Brain-Age Prediction
 
@@ -359,7 +376,8 @@ For C-index and R^2, higher is better. For MAE and RMSE, lower is better.
 | VoCo-B | 0.663 [0.616, 0.699] | 0.111 [0.065, 0.165] | 6.22 [5.46, 6.94] | 12.03 [10.54, 13.36] |
 | BrainIAC | 0.650 [0.615, 0.686] | 0.522 [0.447, 0.591] | 5.42 [4.93, 5.95] | 8.82 [7.77, 9.78] |
 | NeuroVFM | 0.629 [0.584, 0.673] | 0.673 [0.611, 0.735] | 4.36 [3.91, 4.77] | 7.29 [6.35, 8.12] |
-| **Neuro-JEPA** | **0.695 [0.664, 0.718]** | **0.894 [0.860, 0.917]** | **2.78 [2.56, 3.02]** | **4.15 [3.69, 4.70]** |
+| **Neuro-JEPA-B** | 0.695 [0.664, 0.718] | **0.894** [0.860, 0.917] | 2.78 [2.56, 3.02] | **4.15** [3.69, 4.70] |
+| **Neuro-JEPA-L** | **0.705** [0.6501, 0.754] | 0.893 [0.862, 0.915] | **2.74** [2.50, 2.95] | 4.18 [3.73, 4.61] |
 
 ### Average Multimodal Performance
 
