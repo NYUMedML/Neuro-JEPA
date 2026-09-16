@@ -144,7 +144,7 @@ All entrypoints use Hydra. Configuration names correspond to YAML filenames unde
 
 ### Weight Sharing
 
-Pretrained weights for both model sizes are available upon request via Hugging Face. The names below match the **Neuro-JEPA-B** and **Neuro-JEPA-L** results in the benchmark tables.
+Pretrained weights for both model sizes are available upon request via Hugging Face. The names below match the **Neuro-JEPA-B** and **Neuro-JEPA-L** results in the benchmark tables. **You only need to request from one repository to have all model weight access**
 
 | Model | Size | Hugging Face |
 | --- | --- | --- |
